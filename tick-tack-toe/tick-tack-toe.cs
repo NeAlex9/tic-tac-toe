@@ -73,7 +73,15 @@ namespace tick_tack_toe
 
                 Console.WriteLine("Your move: " + Player.Move);
                 Console.WriteLine("Computer move: " + Computer.Move);
-                Console.WriteLine(GameResults(Player, Computer).Name + " win!");
+                User winner; 
+                if ((winner = GameResults(Player, Computer)) != null)
+                {
+                    Console.WriteLine(winner.Name + " win!");
+                }
+                else
+                {
+                    Console.WriteLine("no winners");
+                }
                 Console.WriteLine("HMAC key: ");
                 Console.WriteLine((new BigInteger(secretKey)).ToString("X") + "\n\n");
             }
@@ -83,6 +91,11 @@ namespace tick_tack_toe
         {
             int firstUserIndex = Array.IndexOf(Moves, firstUser.Move);
             int secondUserIndex = Array.IndexOf(Moves, secondUser.Move);
+            if (firstUserIndex == secondUserIndex)
+            {
+                return null;
+            }
+
             if (firstUserIndex > secondUserIndex)
             {
                 if ((firstUserIndex - secondUserIndex) > Moves.Length / 2)
