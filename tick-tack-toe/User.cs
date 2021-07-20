@@ -8,18 +8,26 @@ namespace tick_tack_toe
 {
     public class User
     {
+        private Random rand = new Random();
+
+        public string Name { get; set; }
+
         public string Move { set; get; }
 
-        public string[] AllMoves { get; private set; }
-
-        public User(string[] moves)
+        public User(string name)
         {
-            moves.CopyTo(this.AllMoves, 0);
+            Name = name;
         }
 
-        public bool IsWin(string move)
+        public void GenerateMove(string[] moves)
         {
+            int len = moves.Length;
+            Move = moves[rand.Next(len)];
+        }
 
+        public void ChooseMove(int index, string[] moves)
+        {
+            Move = moves[index - 1];
         }
     }
 }

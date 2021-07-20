@@ -10,27 +10,63 @@ namespace tick_tack_toe
 {
     public class tick_tack_toe
     {
-        public bool CheckParameters(string[] parameters)
+        public User Computer { get; set; }
+
+        public User Player { get; set; }
+
+        public string[] Moves { get; set; }
+
+        public tick_tack_toe(string[] parameters)
         {
-            if ((parameters.Length & 1) == 0 || parameters.Length == 0 || parameters.Length == 1)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < parameters.Length - 1; i++)
-            {
-                for (int j = i + 1; j < parameters.Length; j++)
-                {
-                    if (parameters[i] == parameters[j])
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
+            parameters.CopyTo(this.Moves, 0);
+            this.Computer = new User("Computer");
+            this.Player = new User("You");
         }
 
-        
+        public void ShowMenu(string[] parameters)
+        {
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                Console.WriteLine((i + 1).ToString() + ") " + parameters[i]);
+            }
+        }
+
+        public void StartGame()
+        {
+            int index = 9;
+            while (index != 0)
+            {
+                byte[] secretKey = KeyGen.GenerateSecretKey();
+                Computer.GenerateMove(Moves);
+                Console.WriteLine("HMAC:");
+                Console.WriteLine(KeyGen.GenerateHMAC(secretKey, Computer.Move));
+                ShowMenu(Moves);
+                Console.Write("Enter your move: ");
+                index = Console.Read();
+                Player.ChooseMove(index, Moves);
+                Console.Write("Your move: " + Player.Move);
+                if (index != 0)
+                {
+                    Console.WriteLine(GameResults(Player, Computer).Name + " win!");
+                }
+
+                Console.WriteLine("HMAC key:");
+                Console.WriteLine((new BigInteger(secretKey)).ToString());
+            }
+
+            Console.WriteLine("Exit");
+        }
+
+        public User GameResults(User firstUser, User secondUser)
+        {
+            int firstUserIndex = Array.IndexOf(Moves, firstUser.Move);
+            int secondUserIndex = Array.IndexOf(Moves, secondUser.Move);
+            if (firstUserIndex < secondUserIndex)
+            {
+                return firstUser;
+            }
+
+            return secondUser;
+        }
     }
 }
