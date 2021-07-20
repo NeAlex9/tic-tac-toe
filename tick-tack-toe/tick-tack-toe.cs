@@ -18,6 +18,7 @@ namespace tick_tack_toe
 
         public tick_tack_toe(string[] parameters)
         {
+            Moves = new string[parameters.Length];
             parameters.CopyTo(this.Moves, 0);
             this.Computer = new User("Computer");
             this.Player = new User("You");
@@ -29,12 +30,14 @@ namespace tick_tack_toe
             {
                 Console.WriteLine((i + 1).ToString() + ") " + parameters[i]);
             }
+
+            Console.WriteLine("0) Exit");
         }
 
         public void StartGame()
         {
             int index = 9;
-            while (index != 0)
+            while (true)
             {
                 byte[] secretKey = KeyGen.GenerateSecretKey();
                 Computer.GenerateMove(Moves);
@@ -42,29 +45,67 @@ namespace tick_tack_toe
                 Console.WriteLine(KeyGen.GenerateHMAC(secretKey, Computer.Move));
                 ShowMenu(Moves);
                 Console.Write("Enter your move: ");
-                index = Console.Read();
-                Player.ChooseMove(index, Moves);
-                Console.Write("Your move: " + Player.Move);
-                if (index != 0)
+                while (true)
                 {
-                    Console.WriteLine(GameResults(Player, Computer).Name + " win!");
+                    try
+                    {
+                        index = Convert.ToInt32(Console.ReadLine());
+                        if (index > Moves.Length || index < 0)
+                        {
+                            Console.WriteLine("Invalid operation");
+                        }
+                        else if (index == 0)
+                        {
+                            Console.WriteLine("Exit");
+                            return;
+                        }
+                        else
+                        {
+                            Player.ChooseMove(index, Moves);
+                            break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Invalid operation");
+                    }
                 }
 
-                Console.WriteLine("HMAC key:");
-                Console.WriteLine((new BigInteger(secretKey)).ToString());
+                Console.WriteLine("Your move: " + Player.Move);
+                Console.WriteLine("Computer move: " + Computer.Move);
+                Console.WriteLine(GameResults(Player, Computer).Name + " win!");
+                Console.WriteLine("HMAC key: ");
+                Console.WriteLine((new BigInteger(secretKey)).ToString("X") + "\n\n");
             }
-
-            Console.WriteLine("Exit");
         }
 
         public User GameResults(User firstUser, User secondUser)
         {
             int firstUserIndex = Array.IndexOf(Moves, firstUser.Move);
             int secondUserIndex = Array.IndexOf(Moves, secondUser.Move);
-            if (firstUserIndex < secondUserIndex)
+            if (firstUserIndex > secondUserIndex)
             {
-                return firstUser;
+                if ((firstUserIndex - secondUserIndex) > Moves.Length / 2)
+                {
+                    return secondUser;
+                }
+                else
+                {
+                    return firstUser;
+                }
             }
+            else if ((firstUserIndex - secondUserIndex) < Moves.Length / 2)
+            {
+                if ((secondUserIndex - firstUserIndex) > Moves.Length / 2)
+                {
+                    return firstUser;
+                }
+                else
+                {
+                    return secondUser;
+                }
+            }
+            int len = Moves.Length / 2;
 
             return secondUser;
         }

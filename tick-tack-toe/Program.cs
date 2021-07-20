@@ -31,15 +31,22 @@ namespace tick_tack_toe
 
         static void Main(string[] args)
         {
-            string[] arr = {"s"};
+            for (int i = 0; i < args.Length; i++)
+            {
+                Console.WriteLine(args[i]);
+            }
+
+            string[] arr = { "rock", "paper", "scissors", "lizard", "Spock" };
             if (!CheckParameters(arr))
             {
                 Console.WriteLine("invalid parameters");
+                Console.ReadLine();
                 return;
             }
 
             var game = new tick_tack_toe(arr);
             game.StartGame();
+            Console.ReadLine();
         }
     }
 

@@ -21,10 +21,12 @@ namespace tick_tack_toe
 
         public static string GenerateHMAC(byte[] key, string move)
         {
-            using (HMACSHA1 hmac = new HMACSHA1(key))
+            using (var shaAlgorithm = new HMACSHA256(key))
             {
-                byte[] moveBytes = System.Text.Encoding.UTF8.GetBytes(move);  //??
-                return Convert.ToBase64String(hmac.ComputeHash(moveBytes));
+                var signatureBytes = System.Text.Encoding.UTF8.GetBytes(move);
+                var signatureHashBytes = shaAlgorithm.ComputeHash(signatureBytes);
+                var signatureHashHex = string.Concat(Array.ConvertAll(signatureHashBytes, b => b.ToString("X2")));
+                return signatureHashHex;
             }
         }
     }

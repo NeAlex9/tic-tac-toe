@@ -8,7 +8,7 @@ namespace tick_tack_toe
 {
     public class User
     {
-        private Random rand = new Random();
+        private static Random rand = new Random();
 
         public string Name { get; set; }
 
